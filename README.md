@@ -19,3 +19,5 @@ Generate pose prediction:
 ```
 docker-compose run demo pose /input/zuck1.jpg
 ```
+
+This will generate `.npz` and `.png` files in the `input` folder.
