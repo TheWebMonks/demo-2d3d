@@ -103,8 +103,7 @@ ENV/
 # Caffe models
 models/
 
-# Input/Output
-input/
+# Output
 output/
 
 # PyCharm
