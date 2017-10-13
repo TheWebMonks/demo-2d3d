@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  2d3d:
+    build: .
+    env_file: .env
+    volumes:
+      - ./input:/input

@@ -99,3 +99,13 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Caffe models
+models/
+
+# Input/Output
+input/
+output/
+
+# PyCharm
+.idea/
