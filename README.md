@@ -21,3 +21,11 @@ docker-compose run demo pose /input/zuck1.jpg
 ```
 
 This will generate `.npz` and `.png` files in the `input` folder.
+
+
+## Using nvidia-docker-compose
+```
+pip install nvidia-docker-compose
+# nvidia-docker-compose binary may not be in your path.  On ubuntu, for my installation, it installed to /home/edward/.local/bin/.  An Anaconda installation will have binaries in anaconda/bin.
+nvidia-docker-compose build
+```
