@@ -24,7 +24,7 @@ case "$1" in
         python pose/pose.py --use_cpu "${@:2}"
     ;;
     bodyfit)
-        echo "todo"
+        python 3dfit/bodyfit.py "${@:2}"
     ;;
     *)
         show_help
