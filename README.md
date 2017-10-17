@@ -32,7 +32,7 @@ nvidia-docker-compose build
 
 Generate body fit:
 ```
-# Download SMPL_python_v.1.0.0.zip and place in the root of the repo directory
+# Download SMPL_python_v.1.0.0.zip and place in the root directory of this repo in the docker host
 nvidia-docker-compose build
 nvidia-docker-compose run demo bodyfit /input/zuck1.jpg
 ```
