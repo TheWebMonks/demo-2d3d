@@ -108,3 +108,11 @@ output/
 
 # PyCharm
 .idea/
+
+# Input crap
+input/*_body.pkl
+input/*_body.pkl_vis.png
+input/*_body_*.png
+input/*_pose.npz
+input/*_pose.npz_vis.png
+input/work_lock
