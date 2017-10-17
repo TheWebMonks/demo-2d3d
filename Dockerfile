@@ -19,8 +19,13 @@ WORKDIR ${BASE}
 RUN pip install -r ${BASE}/requirements.txt
 RUN pip install -r /code/requirements.txt
 
-# Adding Caffemodels
-ADD models/test2.caffemodel ${BASE}/pose/training/model/pose/
+# Adding models: caffe & smpl
+COPY models /models/
+RUN cd /models \
+    && mkdir -p ${BASE}/pose/training/model/pose/ \
+    && unzip p91.zip -d ${BASE}/pose/training/model/pose/ \
+    && unzip SMPL_python_v.1.0.0.zip \
+    && mv -v smpl/* /usr/lib/python2.7/dist-packages/
 
 # Add the entrypoint.sh
 COPY deployment/docker-entrypoint.sh /usr/local/bin/
