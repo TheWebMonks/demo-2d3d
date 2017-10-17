@@ -9,15 +9,19 @@ ENV BASE=/code/up-master
 RUN mkdir /code
 WORKDIR /code
 COPY deployment/requirements.txt .
-RUN apt-get install realpath \
+RUN apt-get install -y realpath git \
     && wget https://github.com/classner/up/archive/master.zip \
     && unzip master.zip \
     && rm master.zip
 WORKDIR ${BASE}
-
+COPY SMPL_python_v.1.0.0.zip .
+COPY config.py .
+RUN unzip SMPL_python_v.1.0.0.zip \
+    && rm SMPL_python_v.1.0.0.zip
 # Install python packages
 RUN pip install -r ${BASE}/requirements.txt
 RUN pip install -r /code/requirements.txt
+RUN pip install opendr
 
 # Adding Caffemodels
 ADD models/test2.caffemodel ${BASE}/pose/training/model/pose/

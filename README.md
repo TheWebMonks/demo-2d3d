@@ -29,3 +29,10 @@ pip install nvidia-docker-compose
 # nvidia-docker-compose binary may not be in your path.  On ubuntu, for my installation, it installed to /home/edward/.local/bin/.  An Anaconda installation will have binaries in anaconda/bin.
 nvidia-docker-compose build
 ```
+
+Generate body fit:
+```
+# Download SMPL_python_v.1.0.0.zip and place in the root of the repo directory
+nvidia-docker-compose build
+docker-compose run demo bodyfit /input/zuck1.jpg
+```
