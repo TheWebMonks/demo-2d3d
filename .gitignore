@@ -115,4 +115,8 @@ input/*_body.pkl_vis.png
 input/*_body_*.png
 input/*_pose.npz
 input/*_pose.npz_vis.png
+input/*_pose.npz_vis.png_body.pkl_working
 input/work_lock
+
+# TODO
+TODO*
