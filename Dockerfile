@@ -9,7 +9,7 @@ ENV BASE=/code/up-master
 RUN mkdir /code
 WORKDIR /code
 COPY deployment/requirements.txt .
-RUN apt-get install realpath \
+RUN apt-get install -y realpath git \
     && wget https://github.com/classner/up/archive/master.zip \
     && unzip master.zip \
     && rm master.zip
