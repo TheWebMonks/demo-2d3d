@@ -24,23 +24,34 @@ function format_file() {
   echo $file
 }
 
+# TODO: version stuff
+# nvcc --version
+
 # Run
 case "$1" in
     bash)
-        python ${BASE}/setup.py develop > /dev/null 2>&1
+        python ${BASE}/setup.py develop > /dev/null 2>&1 || true
         /bin/bash "${@:2}"
     ;;
     pose)
-        python ${BASE}/setup.py develop > /dev/null 2>&1
+        python ${BASE}/setup.py develop > /dev/null 2>&1 || true
         python pose/pose.py --use_cpu $(format_file ${@:2})
     ;;
     bodyfit)
-        python ${BASE}/setup.py develop > /dev/null 2>&1
+        python ${BASE}/setup.py develop > /dev/null 2>&1 || true
         python 3dfit/bodyfit.py $(format_file ${@:2})
     ;;
     render)
-        python ${BASE}/setup.py develop > /dev/null 2>&1
+        python ${BASE}/setup.py develop > /dev/null 2>&1 || true
         python 3dfit/render.py $(format_file ${@:2})
+    ;;
+    segmentation)
+        #python ${BASE}/setup.py develop > /dev/null 2>&1 || true
+        python segmentation/segmentation.py $(format_file ${@:2}) --part
+    ;;
+    version)
+        nvcc --version
+        # TODO: uname? lsb_release, python
     ;;
     *)
         show_help

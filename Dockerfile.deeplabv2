@@ -72,6 +72,12 @@ WORKDIR ${BASE}
 # Install python packages
 RUN pip install -r ${BASE}/requirements.txt
 
+# Applying some hacks to the segmentation.py script
+# Allow bigger resolution
+# Changing the logging level
+RUN sed -i 's/_MAXSIZE = 513/_MAXSIZE = 1000/g' segmentation/segmentation.py \
+    && sed -i 's/_logging.basicConfig(level=_logging.INFO)/_logging.basicConfig(level=_logging.DEBUG)/g' segmentation/segmentation.py
+
 # Adding models: caffe & smpl
 COPY models /models/
 RUN cd /models \
