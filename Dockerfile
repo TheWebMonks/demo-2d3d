@@ -25,7 +25,8 @@ RUN cd /models \
     && mkdir -p ${BASE}/pose/training/model/pose/ \
     && unzip p91.zip -d ${BASE}/pose/training/model/pose/ \
     && unzip SMPL_python_v.1.0.0.zip \
-    && mv -v smpl/* /usr/lib/python2.7/dist-packages/
+    && mv -v smpl/* /usr/lib/python2.7/dist-packages/ \
+    && rm *.zip
 
 # Add the entrypoint.sh
 COPY deployment/docker-entrypoint.sh /usr/local/bin/

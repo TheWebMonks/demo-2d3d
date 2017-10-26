@@ -1,0 +1,95 @@
+FROM nvidia/cuda:7.5-cudnn5-devel-ubuntu14.04
+MAINTAINER caffe-maint@googlegroups.com
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV BASE=/code/up-master
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        git \
+        wget \
+        libatlas-base-dev \
+        libboost-all-dev \
+        libgflags-dev \
+        libgoogle-glog-dev \
+        libhdf5-serial-dev \
+        libleveldb-dev \
+        liblmdb-dev \
+        libopencv-dev \
+        libprotobuf-dev \
+        libsnappy-dev \
+        protobuf-compiler \
+        python-dev \
+        python-numpy \
+        python-pip \
+        python-scipy \
+        realpath unzip && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt
+
+# MATIO
+RUN wget http://jaist.dl.sourceforge.net/project/matio/matio/1.5.2/matio-1.5.2.tar.gz && \
+    tar -xvzf matio-1.5.2.tar.gz && \
+    rm matio-1.5.2.tar.gz
+
+WORKDIR /opt/matio-1.5.2
+
+RUN ./configure && make -j8 && make install -j8
+
+ENV CAFFE_ROOT=/opt/caffe
+WORKDIR $CAFFE_ROOT
+
+ENV INCLUDE_DIRS=/opt/matio-1.5.2/src/:$INCLUDE_DIRS
+ENV LIBRARY_DIRS=/opt/matio-1.5.2/src/:$LIBRARY_DIRS
+
+# FIXME: clone a specific git tag and use ARG instead of ENV once DockerHub supports this.
+ENV CLONE_TAG=master
+
+RUN git clone -b ${CLONE_TAG} --depth 1 https://bitbucket.org/aquariusjay/deeplab-public-ver2.git . && \
+    for req in $(cat python/requirements.txt) pydot; do pip install $req; done && \
+    cp Makefile.config.example Makefile.config && \
+    make all -j8 && \
+    make pycaffe -j8
+
+ENV PYCAFFE_ROOT $CAFFE_ROOT/python
+ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
+ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
+RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
+
+# Create code dir an download UP
+# https://github.com/classner/up
+RUN mkdir /code
+WORKDIR /code
+COPY deployment/requirements.txt .
+RUN apt-get install realpath \
+    && wget https://github.com/classner/up/archive/master.zip \
+    && unzip master.zip \
+    && rm master.zip
+WORKDIR ${BASE}
+
+# Install python packages
+RUN pip install -r ${BASE}/requirements.txt
+
+# Applying some hacks to the segmentation.py script
+# Allow bigger resolution
+# Changing the logging level
+RUN sed -i 's/_MAXSIZE = 513/_MAXSIZE = 1000/g' segmentation/segmentation.py \
+    && sed -i 's/_logging.basicConfig(level=_logging.INFO)/_logging.basicConfig(level=_logging.DEBUG)/g' segmentation/segmentation.py
+
+# Adding models: caffe & smpl
+COPY models /models/
+RUN cd /models \
+    && mkdir -p ${BASE}/segmentation/training/model/segmentation/ \
+    && unzip s31.zip -d ${BASE}/segmentation/training/model/segmentation/ \
+    && unzip SMPL_python_v.1.0.0.zip \
+    && mv -v smpl/* /usr/lib/python2.7/dist-packages/ \
+    && rm *.zip
+
+# Add the entrypoint.sh
+COPY deployment/docker-entrypoint.sh /usr/local/bin/
+RUN chmod ugo+x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["/bin/bash", "/usr/local/bin/docker-entrypoint.sh"]
+
+CMD ["bash"]

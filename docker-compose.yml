@@ -5,3 +5,10 @@ services:
     build: .
     volumes:
       - ./input:/input
+
+  dl:
+    build:
+      context: .
+      dockerfile: Dockerfile.deeplabv2
+    volumes:
+      - ./input:/input
