@@ -47,7 +47,8 @@ case "$1" in
     ;;
     segmentation)
         #python ${BASE}/setup.py develop > /dev/null 2>&1 || true
-        python segmentation/segmentation.py $(format_file ${@:2}) --part
+        #python segmentation/segmentation.py $(format_file ${@:2}) --part
+        python segmentation/segmentation.py $(format_file ${@:2})
     ;;
     version)
         nvcc --version

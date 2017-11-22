@@ -1,8 +1,10 @@
 FROM nvidia/cuda:7.5-cudnn5-devel-ubuntu14.04
+#FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu16.04
 MAINTAINER caffe-maint@googlegroups.com
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV BASE=/code/up-master
+ENV BASE=/code/up
+ENV COMMIT=bf67bc4a1e488b3b0e35f43dfd602b7225a03641
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
@@ -24,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python-numpy \
         python-pip \
         python-scipy \
+        python-matplotlib \
         realpath unzip && \
     rm -rf /var/lib/apt/lists/*
 
@@ -40,13 +43,11 @@ RUN ./configure && make -j8 && make install -j8
 
 ENV CAFFE_ROOT=/opt/caffe
 WORKDIR $CAFFE_ROOT
-
 ENV INCLUDE_DIRS=/opt/matio-1.5.2/src/:$INCLUDE_DIRS
 ENV LIBRARY_DIRS=/opt/matio-1.5.2/src/:$LIBRARY_DIRS
 
 # FIXME: clone a specific git tag and use ARG instead of ENV once DockerHub supports this.
 ENV CLONE_TAG=master
-
 RUN git clone -b ${CLONE_TAG} --depth 1 https://bitbucket.org/aquariusjay/deeplab-public-ver2.git . && \
     for req in $(cat python/requirements.txt) pydot; do pip install $req; done && \
     cp Makefile.config.example Makefile.config && \
@@ -64,13 +65,18 @@ RUN mkdir /code
 WORKDIR /code
 COPY deployment/requirements.txt .
 RUN apt-get install realpath \
-    && wget https://github.com/classner/up/archive/master.zip \
-    && unzip master.zip \
-    && rm master.zip
+    && wget https://github.com/classner/up/archive/${COMMIT}.zip \
+    && unzip ${COMMIT}.zip \
+    && mv up-${COMMIT} up/ \
+    && rm ${COMMIT}.zip
 WORKDIR ${BASE}
 
 # Install python packages
 RUN pip install -r ${BASE}/requirements.txt
+
+# Force dowgrade of matplotlib
+RUN pip uninstall --yes matplotlib
+RUN pip install matplotlib==1.3.1
 
 # Applying some hacks to the segmentation.py script
 # Allow bigger resolution
@@ -81,8 +87,8 @@ RUN sed -i 's/_MAXSIZE = 513/_MAXSIZE = 1000/g' segmentation/segmentation.py \
 # Adding models: caffe & smpl
 COPY models /models/
 RUN cd /models \
-    && mkdir -p ${BASE}/segmentation/training/model/segmentation/ \
-    && unzip s31.zip -d ${BASE}/segmentation/training/model/segmentation/ \
+    && mkdir -p ${BASE}/models/segmentation/ \
+    && unzip s31.zip -d ${BASE}/models/segmentation/ \
     && unzip SMPL_python_v.1.0.0.zip \
     && mv -v smpl/* /usr/lib/python2.7/dist-packages/ \
     && rm *.zip

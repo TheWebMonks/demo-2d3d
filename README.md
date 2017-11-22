@@ -48,3 +48,8 @@ Generate body fit:
 nvidia-docker-compose build
 nvidia-docker-compose run demo bodyfit /input/zuck1.jpg
 ```
+
+Generate segmentation:
+```
+$ nvidia-docker run -it -v "$(pwd)"/input:/input dl segmentation input/debruyne1.jpg
+```
