@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-  demo:
+  caffe:
     build: .
     volumes:
       - ./input:/input
 
-  dl:
+  deeplab:
     build:
       context: .
       dockerfile: Dockerfile.deeplabv2
