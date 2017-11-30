@@ -1,2 +1,23 @@
+
 scikit-image==0.13.1
 opencv-python==3.3.0.10
+
+# Copy/paste from https://github.com/classner/up/blob/master/requirements.txt
+# But pinned to specific versions
+# Force scipy to 0.19.1
+numpy==1.13.1
+scipy==0.19.1
+#sklearn
+scikit-learn==0.14.1
+joblib==0.7.1
+tqdm==4.19.4
+click==6.7
+opendr==0.76
+cython==0.27.3
+chumpy==0.67.5
+pillow==4.3.0
+fasteners==0.14.1
+h5py==2.7.1
+pymp-pypi==0.4.0
+plyfile==0.5
+git+https://github.com/classner/clustertools.git@73521ae280a4bf65026393f1a0e4b21ef672b7fe#egg=clustertools

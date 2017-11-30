@@ -9,6 +9,7 @@ show_help() {
     echo """
 Usage: docker run <imagename> COMMAND
 Commands
+python   : Open a python shell
 pose     : Generate pose predictions
 bodyfit  : Apply bodyfit
 render   : Render a fitted body
@@ -24,35 +25,38 @@ function format_file() {
   echo $file
 }
 
-# TODO: version stuff
-# nvcc --version
+#python ${BASE}/setup.py develop > /dev/null 2>&1 || true
 
 # Run
 case "$1" in
     bash)
-        python ${BASE}/setup.py develop > /dev/null 2>&1 || true
         /bin/bash "${@:2}"
     ;;
+    python)
+        python
+    ;;
     pose)
-        python ${BASE}/setup.py develop > /dev/null 2>&1 || true
         python pose/pose.py --use_cpu $(format_file ${@:2})
     ;;
     bodyfit)
-        python ${BASE}/setup.py develop > /dev/null 2>&1 || true
         python 3dfit/bodyfit.py $(format_file ${@:2})
     ;;
     render)
-        python ${BASE}/setup.py develop > /dev/null 2>&1 || true
         python 3dfit/render.py $(format_file ${@:2})
     ;;
     segmentation)
-        #python ${BASE}/setup.py develop > /dev/null 2>&1 || true
         #python segmentation/segmentation.py $(format_file ${@:2}) --part
         python segmentation/segmentation.py $(format_file ${@:2})
     ;;
     version)
-        nvcc --version
-        # TODO: uname? lsb_release, python
+        echo "CUDA: "
+        nvcc --version || echo "nvcc not installed"
+        echo ""
+        echo "Python: "
+        python --version
+        echo ""
+        echo "Linux: "
+        uname -a
     ;;
     *)
         show_help
